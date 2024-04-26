@@ -5,9 +5,7 @@ import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -33,13 +31,10 @@ public class User implements UserDetails {
     )
     private Set<Role> authorities;
 
-    public User() {
-    }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Visit> visits = new ArrayList<>();
 
-    public User(String username, String password, Set<Role> authorities) {
-        this.username = username;
-        this.password = password;
-        this.authorities = authorities;
+    public User() {
     }
 
     public long getUserId() {
@@ -54,6 +49,10 @@ public class User implements UserDetails {
     @Override
     public String getPassword() {
         return this.password;
+    }
+
+    public List<Visit> getVisits() {
+        return this.visits;
     }
 
     @Override
@@ -93,6 +92,10 @@ public class User implements UserDetails {
         this.password = password;
     }
 
+    public void setVisits(List<Visit> visits) {
+        this.visits = visits;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -100,8 +103,7 @@ public class User implements UserDetails {
         User user = (User) o;
         return userId == user.userId &&
                 Objects.equals(username, user.username) &&
-                Objects.equals(password, user.password) &&
-                Objects.equals(authorities, user.authorities);
+                Objects.equals(password, user.password);
     }
 
     @Override

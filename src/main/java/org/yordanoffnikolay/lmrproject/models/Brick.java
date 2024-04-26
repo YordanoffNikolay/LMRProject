@@ -20,6 +20,9 @@ public class Brick {
     @OneToMany(mappedBy = "brick")
     private Set<Workplace> workplaces = new HashSet<>();
 
+    @OneToMany(mappedBy = "user")
+    private Set<User> users = new HashSet<>();
+
     public Brick() {
     }
 
@@ -35,6 +38,10 @@ public class Brick {
         return workplaces;
     }
 
+    public Set<User> getUsers() {
+        return users;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -45,6 +52,10 @@ public class Brick {
 
     public void setWorkplaces(Set<Workplace> workplaces) {
         this.workplaces = workplaces;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 
     @Override
