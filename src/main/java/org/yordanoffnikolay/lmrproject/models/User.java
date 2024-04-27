@@ -34,6 +34,14 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Visit> visits = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "users_bricks",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "brick_id")
+    )
+    private Set<Brick> bricks = new HashSet<>();
+
     public User() {
     }
 
@@ -53,6 +61,10 @@ public class User implements UserDetails {
 
     public List<Visit> getVisits() {
         return this.visits;
+    }
+
+    public Set<Brick> getBricks() {
+        return this.bricks;
     }
 
     @Override
@@ -94,6 +106,10 @@ public class User implements UserDetails {
 
     public void setVisits(List<Visit> visits) {
         this.visits = visits;
+    }
+
+    public void setBricks(Set<Brick> bricks) {
+        this.bricks = bricks;
     }
 
     @Override

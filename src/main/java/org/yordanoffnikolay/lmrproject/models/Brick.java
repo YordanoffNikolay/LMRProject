@@ -17,10 +17,13 @@ public class Brick {
     @Column(name = "brick_name")
     private String name;
 
-    @OneToMany(mappedBy = "brick")
+    @OneToMany(mappedBy = "brick", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Workplace> workplaces = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "brick_user",
+            joinColumns = @JoinColumn(name = "brick_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> users = new HashSet<>();
 
     public Brick() {
