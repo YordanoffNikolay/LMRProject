@@ -54,29 +54,25 @@ public class SecurityConfiguration {
 
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("api/users/**").permitAll();
-                    auth.requestMatchers(HttpMethod.GET, "/api/playlists/**").permitAll();
                     auth.requestMatchers("/api/admins/**").hasAuthority("ADMIN");
+                    auth.requestMatchers("/api/admins/**").hasAuthority("MANAGER");
                     auth.requestMatchers("/**", "/resources/**", "/static/**", "/css/**", "/js/**",
-                                    "/images/**", "/vendor/**", "/fonts/**")
-                            .permitAll();
-
+                                    "/images/**", "/vendor/**", "/fonts/**").permitAll();
                     auth.anyRequest().authenticated();
-
                 })
 
-                .formLogin(formLogin -> {
-                    formLogin
-                            .loginPage("/login")
-                            .defaultSuccessUrl("/playlists")
-                            .permitAll();
-                })
+//                .formLogin(formLogin -> {
+//                    formLogin
+//                            .loginPage("/login")
+//                            .defaultSuccessUrl("/playlists")
+//                            .permitAll();
+//                })
 
-                .logout((logout) -> logout.logoutSuccessUrl("/"))
-
-                .sessionManagement(Customizer.withDefaults())
-                .authenticationProvider(authProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .formLogin(Customizer.withDefaults())
+//                .logout((logout) -> logout.logoutSuccessUrl("/"))
+//                .sessionManagement(Customizer.withDefaults())
+//                .authenticationProvider(authProvider())
+//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+//                .formLogin(Customizer.withDefaults())
                 .build();
     }
 
