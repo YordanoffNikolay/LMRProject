@@ -1,11 +1,11 @@
 package org.yordanoffnikolay.lmrproject.controllers;
 
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.yordanoffnikolay.lmrproject.dtos.UserDto;
@@ -26,12 +26,14 @@ public class UserController {
     private final UserService userService;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
-    public UserController(UserService userService, JwtService jwtService, AuthenticationManager authenticationManager, UserMapper userMapper) {
+    public UserController(UserService userService, JwtService jwtService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, UserMapper userMapper) {
         this.userService = userService;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
     }
 
@@ -50,7 +52,8 @@ public class UserController {
     }
 
     @PostMapping()
-    public User create(@Valid @RequestBody UserDto userDto) {
+    public User create(@RequestBody UserDto userDto) {
+
         try {
             User user = userMapper.fromDto(userDto);
             return userService.createUser(user);
@@ -67,6 +70,5 @@ public class UserController {
         } else {
             throw new UsernameNotFoundException("invalid user request!");
         }
-//        return jwtService.generateToken(authRequest.getUsername());
     }
 }
