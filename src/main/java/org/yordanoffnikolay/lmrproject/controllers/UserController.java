@@ -10,7 +10,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.yordanoffnikolay.lmrproject.dtos.UserDto;
+import org.yordanoffnikolay.lmrproject.exceptions.AuthorizationException;
 import org.yordanoffnikolay.lmrproject.exceptions.DuplicateEntityException;
+import org.yordanoffnikolay.lmrproject.exceptions.EntityNotFoundException;
 import org.yordanoffnikolay.lmrproject.helpers.AuthenticationHelper;
 import org.yordanoffnikolay.lmrproject.mappers.UserMapper;
 import org.yordanoffnikolay.lmrproject.models.AuthRequest;
@@ -63,6 +65,18 @@ public class UserController {
             return userService.createUser(user, authentication);
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(Authentication authentication, @PathVariable long id) {
+        try {
+            UserDetails loggedUser = authenticationHelper.tryGetUser(authentication);
+            userService.deleteUser(authentication, id, loggedUser);
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 
