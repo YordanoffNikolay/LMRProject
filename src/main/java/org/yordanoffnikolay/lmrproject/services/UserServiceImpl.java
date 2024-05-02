@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser(Authentication authentication, @PathVariable int id, @RequestBody UpdateUserDto updateUserDto) {
+    public User updateUser(Authentication authentication, @PathVariable Long id, @RequestBody UpdateUserDto updateUserDto) {
         try{
             UserDetails loggedUser = authenticationHelper.tryGetUser(authentication);
             User userToUpdate = userMapper.fromDto(id, updateUserDto);
@@ -102,10 +102,10 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
         }
+        //todo: continue from here updateUser
     }
 
     public User deleteUser(Authentication authentication, @PathVariable Long id, UserDetails loggedUser) {
-//        UserDetails loggedUser = authenticationHelper.tryGetUser(authentication);
         User userToDelete = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User", id));
         if (userToDelete.getAuthorities().contains("ADMIN")) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You can't delete ADMIN user");

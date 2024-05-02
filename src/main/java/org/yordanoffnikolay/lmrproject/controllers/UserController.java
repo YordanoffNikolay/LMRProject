@@ -68,6 +68,16 @@ public class UserController {
         }
     }
 
+    @PutMapping("/{id}")
+    public User update(Authentication authentication, @PathVariable long id, @RequestBody UserDto userDto) {
+        try {
+//            UserDetails loggedUser = authenticationHelper.tryGetUser(authentication);
+            return userService.updateUser(authentication, id, userDto);
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+    }
+
     @DeleteMapping("/{id}")
     public void delete(Authentication authentication, @PathVariable long id) {
         try {
