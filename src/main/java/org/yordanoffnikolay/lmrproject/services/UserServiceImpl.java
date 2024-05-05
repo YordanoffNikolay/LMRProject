@@ -110,11 +110,13 @@ public class UserServiceImpl implements UserService {
         if (userToDelete.getAuthorities().contains("ADMIN")) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You can't delete ADMIN user");
         }
+        if (userToDelete.getUsername().equals(loggedUser.getUsername())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You can't delete yourself");
+        }
         if (!authenticationHelper.isAdmin(authentication) && !authenticationHelper.isManager(authentication)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
         }
-
-        //todo: continue from here
+        //todo  continue from here deleteUser
         return userToDelete;
     }
 }
