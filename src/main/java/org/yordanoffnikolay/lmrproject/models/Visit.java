@@ -64,6 +64,10 @@ public class Visit {
         return workplace;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     public boolean isDouble() {
         return isDouble;
     }
@@ -90,6 +94,10 @@ public class Visit {
 
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public void setWorkplace(Workplace workplace) {

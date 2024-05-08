@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface UserService extends UserDetailsService {
     List<User> getAll();
     Optional<User> getById(Long id);
-    User createUser(User user, Authentication authentication);
-    User deleteUser(Authentication authentication, @PathVariable Long id, UserDetails userDetails);
-    User updateUser(Authentication authentication, @PathVariable Long id, @RequestBody UpdateUserDto updateUserDto);
+    User createUser(User user, User loggedUser);
+//    void deleteUser(Authentication authentication, @PathVariable Long id, UserDetails userDetails);
+    User updateUser(Long id, UpdateUserDto updateUserDto, User loggedUser);
 }

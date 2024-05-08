@@ -1,5 +1,6 @@
 package org.yordanoffnikolay.lmrproject.services;
 
+import jdk.jshell.spi.ExecutionControl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -11,11 +12,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 import org.yordanoffnikolay.lmrproject.dtos.UpdateUserDto;
-import org.yordanoffnikolay.lmrproject.dtos.UserDto;
 import org.yordanoffnikolay.lmrproject.exceptions.DuplicateEntityException;
 import org.yordanoffnikolay.lmrproject.exceptions.EntityNotFoundException;
-import org.yordanoffnikolay.lmrproject.helpers.AuthenticationHelper;
-import org.yordanoffnikolay.lmrproject.mappers.UserMapper;
 import org.yordanoffnikolay.lmrproject.models.User;
 import org.yordanoffnikolay.lmrproject.models.Visit;
 import org.yordanoffnikolay.lmrproject.repositories.UserRepository;
@@ -31,15 +29,11 @@ public class UserServiceImpl implements UserService {
     public static final String UNAUTHORIZED = "You are not authorized to perform this action";
 
     private final UserRepository userRepository;
-    private final AuthenticationHelper authenticationHelper;
-    private final UserMapper userMapper;
     private final VisitRepository visitRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, AuthenticationHelper authenticationHelper, UserMapper userMapper, VisitRepository visitRepository) {
+    public UserServiceImpl(UserRepository userRepository, VisitRepository visitRepository) {
         this.userRepository = userRepository;
-        this.authenticationHelper = authenticationHelper;
-        this.userMapper = userMapper;
         this.visitRepository = visitRepository;
     }
 
@@ -80,9 +74,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(User user, Authentication authentication) {
+    public User createUser(User user, User loggedUser) {
         boolean exists = userRepository.findByUsername(user.getUsername()).isPresent();
-        if (!authenticationHelper.isAdmin(authentication) && !authenticationHelper.isManager(authentication)) {
+        if (!loggedUser.getAuthorities().contains("ADMIN") && !loggedUser.getAuthorities().contains("MANAGER")) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
         }
         if (exists) {
@@ -91,32 +85,34 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser(Authentication authentication, @PathVariable Long id, @RequestBody UpdateUserDto updateUserDto) {
+    public User updateUser(@PathVariable Long id, @RequestBody UpdateUserDto updateUserDto, User loggedUser) {
         try{
-            UserDetails loggedUser = authenticationHelper.tryGetUser(authentication);
-            User userToUpdate = userMapper.fromDto(id, updateUserDto);
+            User userToUpdate = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User", id));
             if(userToUpdate.getAuthorities().contains("ADMIN")) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You can't update ADMIN user");
             }
+            userToUpdate.setPassword(updateUserDto.getPassword());
             return userRepository.save(userToUpdate);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
         }
-        //todo: continue from here updateUser
     }
 
-    public User deleteUser(Authentication authentication, @PathVariable Long id, UserDetails loggedUser) {
-        User userToDelete = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User", id));
-        if (userToDelete.getAuthorities().contains("ADMIN")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You can't delete ADMIN user");
-        }
-        if (userToDelete.getUsername().equals(loggedUser.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You can't delete yourself");
-        }
-        if (!authenticationHelper.isAdmin(authentication) && !authenticationHelper.isManager(authentication)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
-        }
-        //todo  continue from here deleteUser
-        return userToDelete;
-    }
+//    public void deleteUser(Authentication authentication, @PathVariable Long id, UserDetails loggedUser) {
+//        User userToDelete = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User", id));
+//        if (userToDelete.getAuthorities().contains("ADMIN")) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You can't delete ADMIN user");
+//        }
+//        if (userToDelete.getUsername().equals(loggedUser.getUsername())) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You can't delete yourself");
+//        }
+////        if (!authenticationHelper.isAdmin(authentication) && !authenticationHelper.isManager(authentication)) {
+////            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
+////        }
+//        List<Visit> visits = visitRepository.findAllByUser(userToDelete);
+//        for (Visit visit : visits) {
+//            visit.setUser(userRepository.findByUsername("deleted_user").get());
+//        }
+//        userRepository.delete(userToDelete);
+//    }
 }

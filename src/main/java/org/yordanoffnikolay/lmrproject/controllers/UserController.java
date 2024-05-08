@@ -13,7 +13,7 @@ import org.yordanoffnikolay.lmrproject.dtos.UserDto;
 import org.yordanoffnikolay.lmrproject.exceptions.AuthorizationException;
 import org.yordanoffnikolay.lmrproject.exceptions.DuplicateEntityException;
 import org.yordanoffnikolay.lmrproject.exceptions.EntityNotFoundException;
-import org.yordanoffnikolay.lmrproject.helpers.AuthenticationHelper;
+//import org.yordanoffnikolay.lmrproject.helpers.AuthenticationHelper;
 import org.yordanoffnikolay.lmrproject.mappers.UserMapper;
 import org.yordanoffnikolay.lmrproject.models.AuthRequest;
 import org.yordanoffnikolay.lmrproject.models.User;
@@ -33,15 +33,14 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
-    private final AuthenticationHelper authenticationHelper;
 
-    public UserController(UserService userService, JwtService jwtService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, UserMapper userMapper, AuthenticationHelper authenticationHelper) {
+    public UserController(UserService userService, JwtService jwtService, AuthenticationManager authenticationManager,
+                          PasswordEncoder passwordEncoder, UserMapper userMapper) {
         this.userService = userService;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
-        this.authenticationHelper = authenticationHelper;
     }
 
     @GetMapping
@@ -61,8 +60,9 @@ public class UserController {
     @PostMapping()
     public User create(@RequestBody UserDto userDto , Authentication authentication) {
         try {
+            User loggedUser = (User) authentication.getPrincipal();
             User user = userMapper.fromDto(userDto);
-            return userService.createUser(user, authentication);
+            return userService.createUser(user, loggedUser);
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
@@ -71,24 +71,25 @@ public class UserController {
     @PutMapping("/{id}")
     public User update(Authentication authentication, @PathVariable long id, @RequestBody UserDto userDto) {
         try {
-//            UserDetails loggedUser = authenticationHelper.tryGetUser(authentication);
-            return userService.updateUser(authentication, id, userDto);
+            User loggedUser = (User) authentication.getPrincipal();
+            return userService.updateUser(id, userDto, loggedUser);
         } catch (AuthorizationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
-
-    @DeleteMapping("/{id}")
-    public void delete(Authentication authentication, @PathVariable long id) {
-        try {
-            UserDetails loggedUser = authenticationHelper.tryGetUser(authentication);
-            userService.deleteUser(authentication, id, loggedUser);
-        } catch (AuthorizationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
-    }
+//
+//    @DeleteMapping("/{id}")
+//    public void delete(Authentication authentication, @PathVariable long id) {
+//        try {
+////            UserDetails loggedUser = authenticationHelper.tryGetUser(authentication);
+//            User loggedUser = (User) authentication.getPrincipal();
+//            userService.deleteUser(authentication, id, loggedUser);
+//        } catch (AuthorizationException e) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+//        } catch (EntityNotFoundException e) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+//        }
+//    }
 
     @PostMapping("/token")
     public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
