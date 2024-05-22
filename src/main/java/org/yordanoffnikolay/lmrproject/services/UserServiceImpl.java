@@ -98,21 +98,21 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-//    public void deleteUser(Authentication authentication, @PathVariable Long id, UserDetails loggedUser) {
-//        User userToDelete = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User", id));
-//        if (userToDelete.getAuthorities().contains("ADMIN")) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You can't delete ADMIN user");
-//        }
-//        if (userToDelete.getUsername().equals(loggedUser.getUsername())) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You can't delete yourself");
-//        }
-////        if (!authenticationHelper.isAdmin(authentication) && !authenticationHelper.isManager(authentication)) {
-////            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
-////        }
-//        List<Visit> visits = visitRepository.findAllByUser(userToDelete);
-//        for (Visit visit : visits) {
-//            visit.setUser(userRepository.findByUsername("deleted_user").get());
-//        }
-//        userRepository.delete(userToDelete);
-//    }
+    public void deleteUser(Authentication authentication, @PathVariable Long id, UserDetails loggedUser) {
+        User userToDelete = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User", id));
+        if (userToDelete.getAuthorities().contains("ADMIN")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You can't delete ADMIN user");
+        }
+        if (userToDelete.getUsername().equals(loggedUser.getUsername())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You can't delete yourself");
+        }
+        if (!authentication.getAuthorities().contains("ADMIN") || !authentication.getAuthorities().contains("MANAGER")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
+        }
+        List<Visit> visits = visitRepository.findAllByUser(userToDelete);
+        for (Visit visit : visits) {
+            visit.setUser(userRepository.findByUsername("deleted_user").get());
+        }
+        userRepository.delete(userToDelete);
+    }
 }

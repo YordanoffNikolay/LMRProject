@@ -15,6 +15,6 @@ public interface UserService extends UserDetailsService {
     List<User> getAll();
     Optional<User> getById(Long id);
     User createUser(User user, User loggedUser);
-//    void deleteUser(Authentication authentication, @PathVariable Long id, UserDetails userDetails);
+    void deleteUser(Authentication authentication, @PathVariable Long id, UserDetails userDetails);
     User updateUser(Long id, UpdateUserDto updateUserDto, User loggedUser);
 }

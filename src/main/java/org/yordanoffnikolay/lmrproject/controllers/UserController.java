@@ -77,19 +77,18 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
-//
-//    @DeleteMapping("/{id}")
-//    public void delete(Authentication authentication, @PathVariable long id) {
-//        try {
-////            UserDetails loggedUser = authenticationHelper.tryGetUser(authentication);
-//            User loggedUser = (User) authentication.getPrincipal();
-//            userService.deleteUser(authentication, id, loggedUser);
-//        } catch (AuthorizationException e) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-//        } catch (EntityNotFoundException e) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-//        }
-//    }
+
+    @DeleteMapping("/{id}")
+    public void delete(Authentication authentication, @PathVariable long id) {
+        try {
+            User loggedUser = (User) authentication.getPrincipal();
+            userService.deleteUser(authentication, id, loggedUser);
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
 
     @PostMapping("/token")
     public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
