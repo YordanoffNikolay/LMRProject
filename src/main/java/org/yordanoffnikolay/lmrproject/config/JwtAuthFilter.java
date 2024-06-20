@@ -1,5 +1,4 @@
 package org.yordanoffnikolay.lmrproject.config;
-
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.io.DecodingException;
@@ -19,7 +18,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.yordanoffnikolay.lmrproject.services.JwtService;
 import org.yordanoffnikolay.lmrproject.services.UserService;
-
 import java.io.IOException;
 
 @Component

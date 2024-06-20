@@ -29,7 +29,7 @@ public class UserMapper {
     }
 
     public User fromDto(long id, UpdateUserDto updateUserDto) {
-        User existingUser = userService.getById(id).orElseThrow(EntityNotFoundException::new);
+        User existingUser = userService.getById(id);
         existingUser.setPassword(passwordEncoder.encode(updateUserDto.getPassword()));
         return existingUser;
     }

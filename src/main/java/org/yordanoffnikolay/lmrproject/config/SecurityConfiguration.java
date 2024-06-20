@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.yordanoffnikolay.lmrproject.services.UserService;
 
 @Configuration
@@ -47,30 +48,36 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    public AuthenticationProvider authProvider() {
+        DaoAuthenticationProvider daoProvider = new DaoAuthenticationProvider();
+        daoProvider.setUserDetailsService(userService);
+        daoProvider.setPasswordEncoder(passwordEncoder());
+        return daoProvider;
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.csrf(AbstractHttpConfigurer::disable)
-
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("api/users/**").permitAll();
-                    auth.requestMatchers("/api/admins/**").hasAuthority("ADMIN");
-                    auth.requestMatchers("/api/admins/**").hasAuthority("MANAGER");
                     auth.requestMatchers("/**", "/resources/**", "/static/**", "/css/**", "/js/**",
-                                    "/images/**", "/vendor/**", "/fonts/**").permitAll();
+                                    "/images/**", "/vendor/**", "/fonts/**")
+                            .permitAll();
                     auth.anyRequest().authenticated();
                 })
 
-//                .formLogin(formLogin -> {
-//                    formLogin
-//                            .loginPage("/login")
+                .formLogin(formLogin -> {
+                    formLogin
+                            .loginPage("/login")
 //                            .defaultSuccessUrl("/playlists")
-//                            .permitAll();
-//                })
+                            .permitAll();
+                })
 
-//                .logout((logout) -> logout.logoutSuccessUrl("/"))
-//                .sessionManagement(Customizer.withDefaults())
-//                .authenticationProvider(authProvider())
-//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-//                .formLogin(Customizer.withDefaults())
+                .logout((logout) -> logout.logoutSuccessUrl("/"))
+
+                .sessionManagement(Customizer.withDefaults())
+                .authenticationProvider(authProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .formLogin(Customizer.withDefaults())
                 .build();
     }
 

@@ -1,9 +1,7 @@
 package org.yordanoffnikolay.lmrproject.services;
 
-import jdk.jshell.spi.ExecutionControl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,8 +12,8 @@ import org.springframework.web.server.ResponseStatusException;
 import org.yordanoffnikolay.lmrproject.dtos.UpdateUserDto;
 import org.yordanoffnikolay.lmrproject.exceptions.DuplicateEntityException;
 import org.yordanoffnikolay.lmrproject.exceptions.EntityNotFoundException;
+import org.yordanoffnikolay.lmrproject.helpers.AuthorizationHelper;
 import org.yordanoffnikolay.lmrproject.models.User;
-import org.yordanoffnikolay.lmrproject.models.Visit;
 import org.yordanoffnikolay.lmrproject.repositories.UserRepository;
 import org.yordanoffnikolay.lmrproject.repositories.VisitRepository;
 
@@ -30,11 +28,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final VisitRepository visitRepository;
+    private final AuthorizationHelper authorizationHelper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, VisitRepository visitRepository) {
+    public UserServiceImpl(UserRepository userRepository, VisitRepository visitRepository, AuthorizationHelper authorizationHelper) {
         this.userRepository = userRepository;
         this.visitRepository = visitRepository;
+        this.authorizationHelper = authorizationHelper;
     }
 
     @Override
@@ -66,23 +66,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getById(Long id) {
+    public User getById(Long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) {
             throw new EntityNotFoundException("User", id);
-        } else return user;
+        } else return user.get();
     }
 
     @Override
-    public User createUser(User user, User loggedUser) {
-        boolean exists = userRepository.findByUsername(user.getUsername()).isPresent();
-        if (!loggedUser.getAuthorities().contains("ADMIN") && !loggedUser.getAuthorities().contains("MANAGER")) {
+    public User getByUsername(String username) {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isEmpty()) {
+            throw new EntityNotFoundException("User","username" ,username);
+        } else return user.get();
+    }
+
+    @Override
+    public User createUser(User userToBeCreated, User loggedUser) {
+        List<String> authorities = loggedUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        if (!authorities.contains("ADMIN") && !authorities.contains("MANAGER")) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
         }
-        if (exists) {
-            throw new DuplicateEntityException("User", "username", user.getUsername());
+        if (userRepository.findByUsername(userToBeCreated.getUsername()).isPresent()) {
+            throw new DuplicateEntityException("User", "username", userToBeCreated.getUsername());
         }
-        return userRepository.save(user);
+        System.out.println("Breakpoint just before save");
+        return userRepository.save(userToBeCreated);
     }
 
     public User updateUser(@PathVariable Long id, @RequestBody UpdateUserDto updateUserDto, User loggedUser) {
@@ -91,6 +100,12 @@ public class UserServiceImpl implements UserService {
             if(userToUpdate.getAuthorities().contains("ADMIN")) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You can't update ADMIN user");
             }
+            if (userToUpdate.getAuthorities().contains("MANAGER") && !authorizationHelper.isAdminOrManager(loggedUser)) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
+            }
+            if (!userToUpdate.getUsername().equals(loggedUser.getUsername()) && !authorizationHelper.isAdminOrManager(loggedUser)) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
+            }
             userToUpdate.setPassword(updateUserDto.getPassword());
             return userRepository.save(userToUpdate);
         } catch (Exception e) {
@@ -98,21 +113,17 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public void deleteUser(Authentication authentication, @PathVariable Long id, UserDetails loggedUser) {
+    @Override
+    public void deleteUser(User user, long id) {
         User userToDelete = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User", id));
         if (userToDelete.getAuthorities().contains("ADMIN")) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You can't delete ADMIN user");
         }
-        if (userToDelete.getUsername().equals(loggedUser.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You can't delete yourself");
-        }
-        if (!authentication.getAuthorities().contains("ADMIN") || !authentication.getAuthorities().contains("MANAGER")) {
+        if (!authorizationHelper.isAdminOrManager(user)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
         }
-        List<Visit> visits = visitRepository.findAllByUser(userToDelete);
-        for (Visit visit : visits) {
-            visit.setUser(userRepository.findByUsername("deleted_user").get());
-        }
-        userRepository.delete(userToDelete);
+        userRepository.deleteById(id);
     }
+
+
 }
