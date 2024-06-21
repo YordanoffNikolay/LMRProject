@@ -25,7 +25,6 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
-
     private final UserService userService;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -98,10 +97,10 @@ public class UserController {
             throw new UsernameNotFoundException("invalid user request !");
         }
     }
-
-    @GetMapping("/me")
-    public User me(Authentication authentication) {
-        User me = authenticationHelper.tryGetUser(authentication);
-        return me;
-    }
+//
+//    @GetMapping("/me")
+//    public User me(Authentication authentication) {
+//        User me = authenticationHelper.tryGetUser(authentication);
+//        return me;
+//    }
 }
