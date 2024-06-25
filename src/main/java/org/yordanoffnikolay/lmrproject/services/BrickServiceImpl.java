@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.yordanoffnikolay.lmrproject.dtos.BrickDto;
 import org.yordanoffnikolay.lmrproject.exceptions.DuplicateEntityException;
+import org.yordanoffnikolay.lmrproject.exceptions.EntityNotFoundException;
 import org.yordanoffnikolay.lmrproject.models.Brick;
 import org.yordanoffnikolay.lmrproject.models.User;
 import org.yordanoffnikolay.lmrproject.repositories.BrickRepository;
@@ -44,5 +45,19 @@ public class BrickServiceImpl implements BrickService {
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
+    }
+
+    @Override
+    public void deleteBrick(BrickDto brickDto, User loggedUser) {
+        List<String> authorities = loggedUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        if (!authorities.contains("ADMIN") && !authorities.contains("MANAGER")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
+        }
+        if (brickRepository.findByName(brickDto.getName()).isEmpty()) {
+            throw new EntityNotFoundException("Brick", "name", brickDto.getName());
+        }
+        Brick brickToDelete = brickRepository.findByName(brickDto.getName()).get();
+        brickRepository.delete(brickToDelete);
+        System.out.println(brickRepository.findAll());
     }
 }

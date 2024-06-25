@@ -6,4 +6,6 @@ import org.yordanoffnikolay.lmrproject.models.User;
 public interface BrickService{
 
     void createBrick(BrickDto brickDto, User loggedUser);
+
+    void deleteBrick(BrickDto brickDto, User loggedUser);
 }
