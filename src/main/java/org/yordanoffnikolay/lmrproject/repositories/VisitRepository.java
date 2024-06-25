@@ -11,5 +11,5 @@ import java.util.List;
 public interface VisitRepository extends JpaRepository<Visit, Long> {
     List<Visit> findAllByUser(User userToDelete);
 
-    Visit getVisitById(long id);
+    Visit getVisitByVisitId(long id);
 }
