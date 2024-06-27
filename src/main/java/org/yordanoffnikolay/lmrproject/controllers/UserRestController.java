@@ -23,7 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
-public class UserController {
+public class UserRestController {
 
     private final UserService userService;
     private final JwtService jwtService;
@@ -32,8 +32,8 @@ public class UserController {
     private final UserMapper userMapper;
     private final AuthenticationHelper authenticationHelper;
 
-    public UserController(UserService userService, JwtService jwtService, AuthenticationManager authenticationManager,
-                          PasswordEncoder passwordEncoder, UserMapper userMapper, AuthenticationHelper authenticationHelper) {
+    public UserRestController(UserService userService, JwtService jwtService, AuthenticationManager authenticationManager,
+                              PasswordEncoder passwordEncoder, UserMapper userMapper, AuthenticationHelper authenticationHelper) {
         this.userService = userService;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;

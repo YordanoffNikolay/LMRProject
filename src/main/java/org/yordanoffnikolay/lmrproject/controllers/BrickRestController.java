@@ -8,25 +8,30 @@ import org.yordanoffnikolay.lmrproject.dtos.BrickDto;
 import org.yordanoffnikolay.lmrproject.exceptions.DuplicateEntityException;
 import org.yordanoffnikolay.lmrproject.exceptions.EntityNotFoundException;
 import org.yordanoffnikolay.lmrproject.helpers.AuthenticationHelper;
+import org.yordanoffnikolay.lmrproject.models.Brick;
 import org.yordanoffnikolay.lmrproject.models.User;
 import org.yordanoffnikolay.lmrproject.services.BrickService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/bricks")
-public class BrickController {
+public class BrickRestController {
 
     private final AuthenticationHelper authenticationHelper;
     private final BrickService brickService;
 
-    public BrickController(AuthenticationHelper authenticationHelper, BrickService brickService) {
+    public BrickRestController(AuthenticationHelper authenticationHelper, BrickService brickService) {
         this.authenticationHelper = authenticationHelper;
         this.brickService = brickService;
     }
 
     @GetMapping
-    public String getBricks() {
-        return "Bricks";
+    public List<Brick> getBricks(Authentication authentication) {
+        User loggedUser = authenticationHelper.tryGetUser(authentication);
+        return brickService.getBricks(loggedUser);
     }
+
 
     @PostMapping("/create")
     public void postBricks(@RequestBody BrickDto brickDto, Authentication authentication) {

@@ -60,4 +60,9 @@ public class BrickServiceImpl implements BrickService {
         brickRepository.delete(brickToDelete);
         System.out.println(brickRepository.findAll());
     }
+
+    @Override
+    public List<Brick> getBricks(User loggedUser) {
+        return brickRepository.findAll();
+    }
 }

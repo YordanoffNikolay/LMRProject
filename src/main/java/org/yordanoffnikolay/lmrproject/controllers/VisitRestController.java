@@ -12,11 +12,11 @@ import org.yordanoffnikolay.lmrproject.services.VisitService;
 
 @Controller
 @RequestMapping("/api/visits")
-public class VisitController {
+public class VisitRestController {
 
     private final VisitService visitService;
 
-    public VisitController(VisitService visitService) {
+    public VisitRestController(VisitService visitService) {
         this.visitService = visitService;
     }
 
