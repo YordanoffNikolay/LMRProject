@@ -1,12 +1,20 @@
 package org.yordanoffnikolay.lmrproject.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import org.yordanoffnikolay.lmrproject.exceptions.DuplicateEntityException;
+import org.yordanoffnikolay.lmrproject.exceptions.EntityNotFoundException;
 import org.yordanoffnikolay.lmrproject.models.Workplace;
 import org.yordanoffnikolay.lmrproject.repositories.WorkplaceRepository;
 
 import java.util.List;
-import java.util.Optional;
+
+import static org.yordanoffnikolay.lmrproject.services.UserServiceImpl.UNAUTHORIZED;
 
 @Service
 public class WorkplaceServiceImpl implements WorkplaceService {
@@ -19,12 +27,44 @@ public class WorkplaceServiceImpl implements WorkplaceService {
     }
 
     @Override
-    public Optional<Workplace> getById(Long id) {
-        return workplaceRepository.findById(id);
+    public List<Workplace> getAll() {
+        return workplaceRepository.findAll();
     }
 
     @Override
-    public List<Workplace> getAll() {
-        return workplaceRepository.findAll();
+    public Workplace getById(Long id) {
+        if (workplaceRepository.findById(id).isPresent()) {
+            return workplaceRepository.findById(id).get();
+        } else {
+            throw new EntityNotFoundException("Workplace", id);
+        }
+    }
+
+    @Override
+    public Workplace create(Workplace workplace) {
+        getLoggedUserAuthorities();
+        if (workplaceRepository.findByName(workplace.getName()).isPresent()) {
+            throw new DuplicateEntityException("Workplace", "name", workplace.getName());
+        }
+        System.out.println();
+        return workplaceRepository.save(workplace);
+    }
+
+    @Override
+    public void delete(Long id) {
+        getLoggedUserAuthorities();
+        if (workplaceRepository.findById(id).isPresent()) {
+            workplaceRepository.deleteById(id);
+        } else {
+            throw new EntityNotFoundException("Workplace", id);
+        }
+    }
+
+    private void getLoggedUserAuthorities() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<String> authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        if (!authorities.contains("ADMIN,") && !authorities.contains("MANAGER,")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
+        }
     }
 }

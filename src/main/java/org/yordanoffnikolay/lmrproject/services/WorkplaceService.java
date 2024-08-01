@@ -9,5 +9,9 @@ public interface WorkplaceService {
 
     List<Workplace> getAll();
 
-    Optional<Workplace> getById(Long id);
+   Workplace getById(Long id);
+
+   Workplace create(Workplace workplace);
+
+   void delete(Long id);
 }

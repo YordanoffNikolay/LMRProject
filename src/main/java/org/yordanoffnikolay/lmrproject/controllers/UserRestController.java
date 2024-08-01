@@ -97,10 +97,10 @@ public class UserRestController {
             throw new UsernameNotFoundException("invalid user request !");
         }
     }
-//
-//    @GetMapping("/me")
-//    public User me(Authentication authentication) {
-//        User me = authenticationHelper.tryGetUser(authentication);
-//        return me;
-//    }
+
+    @GetMapping("/me")
+    public User me(Authentication authentication) {
+        User me = authenticationHelper.tryGetUser(authentication);
+        return me;
+    }
 }
