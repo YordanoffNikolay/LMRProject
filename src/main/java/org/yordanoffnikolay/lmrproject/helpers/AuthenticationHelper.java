@@ -20,14 +20,21 @@ public class AuthenticationHelper {
         this.userService = userService;
     }
 
-    public User tryGetUser(Authentication authentication) {
-        String username;
-        try {
-            username = authentication.getName();
-        } catch (NullPointerException e) {
-            throw new AuthorizationException(AUTH_ERR);
+//    public User tryGetUser(Authentication authentication) {
+//        String username;
+//        try {
+//            username = authentication.getName();
+//        } catch (NullPointerException e) {
+//            throw new AuthorizationException(AUTH_ERR);
+//        }
+//        return userService.getByUsername(username);
+//    }
+
+    public User tryGetUser(Authentication authentication) throws AuthorizationException {
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken || authentication.getDetails() == null) {
+            throw new AuthorizationException("Invalid or missing authentication token");
         }
-        return userService.getByUsername(username);
+        return userService.getByUsername(authentication.getName());
     }
 
     public boolean isAuthenticated() {

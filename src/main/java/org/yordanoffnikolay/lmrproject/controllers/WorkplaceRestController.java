@@ -1,12 +1,17 @@
 package org.yordanoffnikolay.lmrproject.controllers;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.yordanoffnikolay.lmrproject.dtos.WorkplaceDto;
 import org.yordanoffnikolay.lmrproject.exceptions.AuthorizationException;
 import org.yordanoffnikolay.lmrproject.exceptions.DuplicateEntityException;
 import org.yordanoffnikolay.lmrproject.exceptions.EntityNotFoundException;
+import org.yordanoffnikolay.lmrproject.helpers.AuthenticationHelper;
+import org.yordanoffnikolay.lmrproject.models.User;
 import org.yordanoffnikolay.lmrproject.models.Workplace;
 import org.yordanoffnikolay.lmrproject.services.WorkplaceService;
 
@@ -18,13 +23,22 @@ public class WorkplaceRestController {
 
 
     private final WorkplaceService workplaceService;
+    private final AuthenticationHelper authenticationHelper;
 
-    public WorkplaceRestController(WorkplaceService workplaceService) {
+    public WorkplaceRestController(WorkplaceService workplaceService, AuthenticationHelper authenticationHelper) {
         this.workplaceService = workplaceService;
+        this.authenticationHelper = authenticationHelper;
     }
 
     @GetMapping
-    public List<Workplace> getAll() {
+    public List<Workplace> getAll(){
+        try {
+            authenticationHelper.tryGetUser(SecurityContextHolder.getContext().getAuthentication());
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized: " + e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
+        }
         return workplaceService.getAll();
     }
 

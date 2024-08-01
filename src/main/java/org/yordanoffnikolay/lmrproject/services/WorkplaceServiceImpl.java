@@ -34,6 +34,7 @@ public class WorkplaceServiceImpl implements WorkplaceService {
 
     @Override
     public Workplace getById(Long id) {
+
         if (workplaceRepository.findById(id).isPresent()) {
             return workplaceRepository.findById(id).get();
         } else {

@@ -62,6 +62,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 ExpiredJwtException |
                 SignatureException e){
             handlerExceptionResolver.resolveException(request,response,null,e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 }
