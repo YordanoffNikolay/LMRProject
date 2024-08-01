@@ -61,4 +61,15 @@ public class WorkplaceRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+
+    @PutMapping("/{id}")
+    public Workplace update(@PathVariable Long id, @RequestBody WorkplaceDto workplaceDto) {
+        try {
+            return workplaceService.update(id, workplaceDto);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+    }
 }

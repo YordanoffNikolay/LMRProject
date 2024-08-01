@@ -1,5 +1,6 @@
 package org.yordanoffnikolay.lmrproject.services;
 
+import org.yordanoffnikolay.lmrproject.dtos.WorkplaceDto;
 import org.yordanoffnikolay.lmrproject.models.Workplace;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface WorkplaceService {
    Workplace create(Workplace workplace);
 
    void delete(Long id);
+
+   Workplace update(Long id, WorkplaceDto workplaceDto);
 }

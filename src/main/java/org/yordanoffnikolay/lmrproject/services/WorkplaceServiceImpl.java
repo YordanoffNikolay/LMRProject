@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.yordanoffnikolay.lmrproject.dtos.WorkplaceDto;
 import org.yordanoffnikolay.lmrproject.exceptions.DuplicateEntityException;
 import org.yordanoffnikolay.lmrproject.exceptions.EntityNotFoundException;
 import org.yordanoffnikolay.lmrproject.models.Workplace;
@@ -57,6 +58,19 @@ public class WorkplaceServiceImpl implements WorkplaceService {
             workplaceRepository.deleteById(id);
         } else {
             throw new EntityNotFoundException("Workplace", id);
+        }
+    }
+
+    @Override
+    public Workplace update(Long id, WorkplaceDto workplaceDto) {
+        Workplace workplace = getById(id);
+        workplace.setName(workplaceDto.getName());
+        workplace.setAddress(workplaceDto.getAddress());
+        getLoggedUserAuthorities();
+        if (workplaceRepository.findById(workplace.getId()).isPresent()) {
+            return workplaceRepository.save(workplace);
+        } else {
+            throw new EntityNotFoundException("Workplace", workplace.getId());
         }
     }
 
