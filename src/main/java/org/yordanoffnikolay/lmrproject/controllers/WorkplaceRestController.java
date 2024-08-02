@@ -10,6 +10,7 @@ import org.yordanoffnikolay.lmrproject.exceptions.DuplicateEntityException;
 import org.yordanoffnikolay.lmrproject.exceptions.EntityNotFoundException;
 import org.yordanoffnikolay.lmrproject.helpers.AuthenticationHelper;
 import org.yordanoffnikolay.lmrproject.models.Workplace;
+import org.yordanoffnikolay.lmrproject.services.BrickService;
 import org.yordanoffnikolay.lmrproject.services.WorkplaceService;
 
 import java.util.List;
@@ -21,10 +22,13 @@ public class WorkplaceRestController {
 
     private final WorkplaceService workplaceService;
     private final AuthenticationHelper authenticationHelper;
+    private final BrickService brickService;
 
-    public WorkplaceRestController(WorkplaceService workplaceService, AuthenticationHelper authenticationHelper) {
+    public WorkplaceRestController(WorkplaceService workplaceService, AuthenticationHelper authenticationHelper,
+                                   BrickService brickService) {
         this.workplaceService = workplaceService;
         this.authenticationHelper = authenticationHelper;
+        this.brickService = brickService;
     }
 
     @GetMapping
@@ -74,6 +78,7 @@ public class WorkplaceRestController {
             Workplace workplace = new Workplace();
             workplace.setName(workplaceDto.getName());
             workplace.setAddress(workplaceDto.getAddress());
+            brickService.getBrickByName(workplaceDto.getBrickName()).ifPresent(workplace::setBrick);
             workplaceService.create(workplace);
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());

@@ -14,6 +14,7 @@ import org.yordanoffnikolay.lmrproject.repositories.BrickRepository;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import static org.yordanoffnikolay.lmrproject.services.UserServiceImpl.UNAUTHORIZED;
 
@@ -64,5 +65,10 @@ public class BrickServiceImpl implements BrickService {
     @Override
     public List<Brick> getBricks(User loggedUser) {
         return brickRepository.findAll();
+    }
+
+    @Override
+    public Optional<Brick> getBrickByName(String name) {
+        return brickRepository.findByName(name);
     }
 }
