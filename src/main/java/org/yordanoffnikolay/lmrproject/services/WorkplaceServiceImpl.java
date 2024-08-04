@@ -48,7 +48,6 @@ public class WorkplaceServiceImpl implements WorkplaceService {
         if (workplaceRepository.findByName(workplace.getName()).isPresent()) {
             throw new DuplicateEntityException("Workplace", "name", workplace.getName());
         }
-        System.out.println();
         return workplaceRepository.save(workplace);
     }
 
@@ -76,9 +75,8 @@ public class WorkplaceServiceImpl implements WorkplaceService {
     }
 
     private void getLoggedUserAuthorities() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        List<String> authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-        if (!authorities.contains("ADMIN,") && !authorities.contains("MANAGER,")) {
+        String authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+        if (!authorities.contains("ADMIN") && !authorities.contains("MANAGER")) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
         }
     }

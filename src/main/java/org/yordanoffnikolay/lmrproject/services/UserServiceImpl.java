@@ -3,6 +3,7 @@ package org.yordanoffnikolay.lmrproject.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -27,13 +28,11 @@ public class UserServiceImpl implements UserService {
     public static final String UNAUTHORIZED = "You are not authorized to perform this action";
 
     private final UserRepository userRepository;
-    private final VisitRepository visitRepository;
     private final AuthorizationHelper authorizationHelper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, VisitRepository visitRepository, AuthorizationHelper authorizationHelper) {
+    public UserServiceImpl(UserRepository userRepository, AuthorizationHelper authorizationHelper) {
         this.userRepository = userRepository;
-        this.visitRepository = visitRepository;
         this.authorizationHelper = authorizationHelper;
     }
 
@@ -83,7 +82,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User userToBeCreated, User loggedUser) {
-        List<String> authorities = loggedUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        String authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
         if (!authorities.contains("ADMIN") && !authorities.contains("MANAGER")) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
         }

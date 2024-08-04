@@ -4,7 +4,6 @@ import org.yordanoffnikolay.lmrproject.dtos.WorkplaceDto;
 import org.yordanoffnikolay.lmrproject.models.Workplace;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface WorkplaceService {
 

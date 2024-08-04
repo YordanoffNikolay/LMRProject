@@ -14,6 +14,7 @@ import org.yordanoffnikolay.lmrproject.services.BrickService;
 
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/api/bricks")
 public class BrickRestController {
@@ -27,29 +28,46 @@ public class BrickRestController {
     }
 
     @GetMapping
-    public List<Brick> getBricks(Authentication authentication) {
-        User loggedUser = authenticationHelper.tryGetUser(authentication);
-        return brickService.getBricks(loggedUser);
+    public List<Brick> getBricks() {
+        try {
+            authenticationHelper.isAuthenticated();
+            return brickService.getBricks();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You need to login first");
+        }
     }
 
-
     @PostMapping("/create")
-    public void postBricks(@RequestBody BrickDto brickDto, Authentication authentication) {
+    public void createBricks(@RequestBody BrickDto brickDto) {
         try {
-            User loggedUser = authenticationHelper.tryGetUser(authentication);
-            brickService.createBrick(brickDto, loggedUser);
+            authenticationHelper.isAuthenticated();
+            brickService.createBrick(brickDto);
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
     }
 
-    @DeleteMapping("/delete")
-    public void deleteBricks(@RequestBody BrickDto brickDto, Authentication authentication) {
+    @DeleteMapping("/{id}")
+    public void deleteBricks(@PathVariable long id, Authentication authentication) {
         try {
             User loggedUser = authenticationHelper.tryGetUser(authentication);
-            brickService.deleteBrick(brickDto, loggedUser);
+            brickService.deleteBrick(id, loggedUser);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public void updateBricks(@PathVariable long id, @RequestBody BrickDto brickDto, Authentication authentication) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(authentication);
+            brickService.updateBrick(id, brickDto, loggedUser);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 }

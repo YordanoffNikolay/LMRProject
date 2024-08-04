@@ -9,11 +9,13 @@ import java.util.Optional;
 
 public interface BrickService{
 
-    void createBrick(BrickDto brickDto, User loggedUser);
+    void createBrick(BrickDto brickDto);
 
-    void deleteBrick(BrickDto brickDto, User loggedUser);
+    void deleteBrick(long id, User loggedUser);
 
-    List<Brick> getBricks(User loggedUser);
+    List<Brick> getBricks();
 
     Optional<Brick> getBrickByName(String name);
+
+    void updateBrick(long id, BrickDto brickDto, User loggedUser);
 }

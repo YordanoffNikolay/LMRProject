@@ -2,19 +2,18 @@ package org.yordanoffnikolay.lmrproject.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.yordanoffnikolay.lmrproject.dtos.BrickDto;
 import org.yordanoffnikolay.lmrproject.exceptions.DuplicateEntityException;
 import org.yordanoffnikolay.lmrproject.exceptions.EntityNotFoundException;
+import org.yordanoffnikolay.lmrproject.helpers.AuthenticationHelper;
 import org.yordanoffnikolay.lmrproject.models.Brick;
 import org.yordanoffnikolay.lmrproject.models.User;
 import org.yordanoffnikolay.lmrproject.repositories.BrickRepository;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.yordanoffnikolay.lmrproject.services.UserServiceImpl.UNAUTHORIZED;
 
@@ -22,18 +21,17 @@ import static org.yordanoffnikolay.lmrproject.services.UserServiceImpl.UNAUTHORI
 public class BrickServiceImpl implements BrickService {
 
     private final BrickRepository brickRepository;
+    private final AuthenticationHelper authenticationHelper;
 
     @Autowired
-    public BrickServiceImpl(BrickRepository brickRepository) {
+    public BrickServiceImpl(BrickRepository brickRepository, AuthenticationHelper authenticationHelper) {
         this.brickRepository = brickRepository;
+        this.authenticationHelper = authenticationHelper;
     }
 
     @Override
-    public void createBrick(BrickDto brickDto, User loggedUser) {
-        List<String> authorities = loggedUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-        if (!authorities.contains("ADMIN") && !authorities.contains("MANAGER")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
-        }
+    public void createBrick(BrickDto brickDto) {
+        checkAuthorities();
         if (brickRepository.findByName(brickDto.getName()).isPresent()) {
             throw new DuplicateEntityException("Brick", "name", brickDto.getName());
         }
@@ -49,21 +47,37 @@ public class BrickServiceImpl implements BrickService {
     }
 
     @Override
-    public void deleteBrick(BrickDto brickDto, User loggedUser) {
-        List<String> authorities = loggedUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-        if (!authorities.contains("ADMIN") && !authorities.contains("MANAGER")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
-        }
-        if (brickRepository.findByName(brickDto.getName()).isEmpty()) {
-            throw new EntityNotFoundException("Brick", "name", brickDto.getName());
-        }
-        Brick brickToDelete = brickRepository.findByName(brickDto.getName()).get();
+    public void deleteBrick(long id, User loggedUser) {
+        checkAuthorities();
+        Brick brickToDelete = getBrick(id);
         brickRepository.delete(brickToDelete);
         System.out.println(brickRepository.findAll());
     }
 
+    private Brick getBrick(long id) {
+        if (brickRepository.findById(id).isEmpty()) {
+            throw new EntityNotFoundException("Brick", id);
+        }
+        return brickRepository.findById(id).get();
+    }
+
     @Override
-    public List<Brick> getBricks(User loggedUser) {
+    public void updateBrick(long id, BrickDto brickDto, User loggedUser) {
+        checkAuthorities();
+        Brick brickToUpdate = getBrick(id);
+        brickToUpdate.setName(brickDto.getName());
+        brickRepository.save(brickToUpdate);
+    }
+
+    private static void checkAuthorities() {
+        String authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+        if (!authorities.contains("ADMIN") && !authorities.contains("MANAGER")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
+        }
+    }
+
+    @Override
+    public List<Brick> getBricks() {
         return brickRepository.findAll();
     }
 

@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface BrickRepository extends JpaRepository<Brick, Long> {
 
     Optional<Brick> findByName(String name);
+    Optional<Brick> findById(Long id);
 }

@@ -32,21 +32,16 @@ public class AuthenticationHelper {
 
     public User tryGetUser(Authentication authentication) throws AuthorizationException {
         if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken || authentication.getDetails() == null) {
-            throw new AuthorizationException("Invalid or missing authentication token");
+            throw new AuthorizationException(AUTH_ERR);
         }
         return userService.getByUsername(authentication.getName());
     }
 
-    public boolean isAuthenticated() {
+    public void isAuthenticated() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
-            return false;
+            return;
         }
-        return authentication.isAuthenticated();
-    }
-
-    public boolean isAdminOrManager (User user) {
-        return user.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ADMIN") || authority.getAuthority().equals("MANAGER"));
+        authentication.isAuthenticated();
     }
 }
