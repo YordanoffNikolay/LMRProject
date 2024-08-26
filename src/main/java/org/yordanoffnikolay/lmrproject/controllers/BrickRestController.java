@@ -37,6 +37,16 @@ public class BrickRestController {
         }
     }
 
+    @GetMapping("/{id}")
+    public Brick getBrickById(@PathVariable long id) {
+        try {
+            authenticationHelper.isAuthenticated();
+            return brickService.getBrick(id);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You need to login first");
+        }
+    }
+
     @PostMapping("/create")
     public void createBricks(@RequestBody BrickDto brickDto) {
         try {

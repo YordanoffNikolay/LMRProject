@@ -21,10 +21,12 @@ import static org.yordanoffnikolay.lmrproject.services.UserServiceImpl.UNAUTHORI
 public class WorkplaceServiceImpl implements WorkplaceService {
 
     private final WorkplaceRepository workplaceRepository;
+    private final BrickService brickService;
 
     @Autowired
-    public WorkplaceServiceImpl(WorkplaceRepository workplaceRepository) {
+    public WorkplaceServiceImpl(WorkplaceRepository workplaceRepository, BrickService brickService) {
         this.workplaceRepository = workplaceRepository;
+        this.brickService = brickService;
     }
 
     @Override
@@ -66,6 +68,9 @@ public class WorkplaceServiceImpl implements WorkplaceService {
         Workplace workplace = getById(id);
         workplace.setName(workplaceDto.getName());
         workplace.setAddress(workplaceDto.getAddress());
+        if (workplaceDto.getBrickName() != null) {
+            workplace.setBrick(brickService.getBrickByName(workplaceDto.getBrickName()).orElse(null));
+        }
         getLoggedUserAuthorities();
         if (workplaceRepository.findById(workplace.getId()).isPresent()) {
             return workplaceRepository.save(workplace);

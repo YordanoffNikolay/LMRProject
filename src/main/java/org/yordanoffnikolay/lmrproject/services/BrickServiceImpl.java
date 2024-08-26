@@ -54,11 +54,18 @@ public class BrickServiceImpl implements BrickService {
         System.out.println(brickRepository.findAll());
     }
 
-    private Brick getBrick(long id) {
+    public Brick getBrick(long id) {
         if (brickRepository.findById(id).isEmpty()) {
             throw new EntityNotFoundException("Brick", id);
         }
         return brickRepository.findById(id).get();
+    }
+
+    public Brick getBrick(String name) {
+        if (brickRepository.findByName(name).isEmpty()) {
+            throw new EntityNotFoundException("Brick", "name", name);
+        }
+        return brickRepository.findByName(name).get();
     }
 
     @Override

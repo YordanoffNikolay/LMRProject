@@ -16,7 +16,6 @@ import org.yordanoffnikolay.lmrproject.exceptions.EntityNotFoundException;
 import org.yordanoffnikolay.lmrproject.helpers.AuthorizationHelper;
 import org.yordanoffnikolay.lmrproject.models.User;
 import org.yordanoffnikolay.lmrproject.repositories.UserRepository;
-import org.yordanoffnikolay.lmrproject.repositories.VisitRepository;
 
 import java.util.Collection;
 import java.util.List;
