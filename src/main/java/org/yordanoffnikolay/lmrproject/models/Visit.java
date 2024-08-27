@@ -34,11 +34,6 @@ public class Visit extends Task{
         return isDouble;
     }
 
-    @Override
-    public int getTimeSpent() {
-        return 1;
-    }
-
     public void setDouble(boolean isDouble) {
         this.isDouble = isDouble;
     }

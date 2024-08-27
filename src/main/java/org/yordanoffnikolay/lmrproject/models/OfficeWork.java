@@ -9,4 +9,9 @@ public class OfficeWork extends Task {
 
     public OfficeWork() {
     }
+
+    @Override
+    public void setTimeSpent(int timeSpent) {
+        super.setTimeSpent(timeSpent);
+    }
 }

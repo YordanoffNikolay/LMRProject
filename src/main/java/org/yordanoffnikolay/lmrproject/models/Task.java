@@ -14,12 +14,12 @@ public abstract class Task {
     private long taskId;
 
     @Column(name = "time_spent")
-    private int timeSpent;
+    private int timeSpent = 1;
 
-    @Column(name = "is_completed")
+    @Column(name = "is_completed", columnDefinition = "boolean default false")
     private boolean isCompleted;
 
-    @Column(name = "is_locked")
+    @Column(name = "is_locked", columnDefinition = "boolean default false")
     private boolean isLocked;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -36,50 +36,41 @@ public abstract class Task {
     public long getTaskId() {
         return taskId;
     }
-
-    public void setTaskId(long taskId) {
-        this.taskId = taskId;
-    }
-
     public Workday getWorkday() {
         return workday;
     }
-
-    public void setWorkday(Workday workday) {
-        this.workday = workday;
-    }
-
     public User getUser() {
         return user;
+    }
+    public int getTimeSpent() {
+        return timeSpent;
+    }
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+    public boolean isLocked() {
+        return isLocked;
     }
 
     public void setUser(User user) {
         this.user = user;
     }
-
-    public int getTimeSpent() {
-        return timeSpent;
+    public void setCompleted(boolean completed) {
+        isCompleted = false;
     }
-
+    public void setLocked(boolean locked) {
+        isLocked = false;
+    }
     public void setTimeSpent(int timeSpent) {
         this.timeSpent = timeSpent;
     }
-
-    public boolean isCompleted() {
-        return isCompleted;
+    public void setWorkday(Workday workday) {
+        this.workday = workday;
+    }
+    public void setTaskId(long taskId) {
+        this.taskId = taskId;
     }
 
-    public void setCompleted(boolean completed) {
-        isCompleted = completed;
-    }
-
-    public boolean isLocked() {
-        return isLocked;
-    }
-
-    public void setLocked(boolean locked) {
-        isLocked = locked;
-    }
 
     @Override
     public boolean equals(Object o) {

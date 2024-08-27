@@ -1,7 +1,9 @@
 package org.yordanoffnikolay.lmrproject.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -16,19 +18,20 @@ public class Workday {
     private long workdayId;
 
     @Column(name = "date")
-    private Date date;
+    private String date;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "workday", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Task> tasks;
 
     public Workday() {
     }
 
-    public Workday(Date date, User user) {
+    public Workday(String date, User user) {
         this.date = date;
         this.user = user;
     }
@@ -37,7 +40,7 @@ public class Workday {
         return workdayId;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
@@ -53,7 +56,7 @@ public class Workday {
         this.workdayId = workdayId;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
