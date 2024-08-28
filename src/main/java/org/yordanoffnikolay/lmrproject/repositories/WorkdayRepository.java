@@ -10,4 +10,5 @@ import java.util.Date;
 @Repository
 public interface WorkdayRepository extends JpaRepository<Workday, Long> {
     Workday findByDateAndUser(String date, User user);
+    Workday findWorkdayByWorkdayId(long workdayId);
 }

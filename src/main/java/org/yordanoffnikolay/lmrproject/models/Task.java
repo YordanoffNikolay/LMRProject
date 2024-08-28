@@ -1,5 +1,6 @@
 package org.yordanoffnikolay.lmrproject.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.util.Objects;
 
@@ -24,11 +25,8 @@ public abstract class Task {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workday_id")
+    @JsonBackReference
     private Workday workday;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
 
     public Task() {
     }
@@ -38,9 +36,6 @@ public abstract class Task {
     }
     public Workday getWorkday() {
         return workday;
-    }
-    public User getUser() {
-        return user;
     }
     public int getTimeSpent() {
         return timeSpent;
@@ -52,9 +47,6 @@ public abstract class Task {
         return isLocked;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
     public void setCompleted(boolean completed) {
         isCompleted = false;
     }
@@ -71,7 +63,6 @@ public abstract class Task {
         this.taskId = taskId;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -80,12 +71,11 @@ public abstract class Task {
         return timeSpent == task.timeSpent
                 && isCompleted == task.isCompleted
                 && isLocked == task.isLocked
-                && Objects.equals(workday, task.workday)
-                && Objects.equals(user, task.user);
+                && Objects.equals(workday, task.workday);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(timeSpent, isCompleted, isLocked, workday, user);
+        return Objects.hash(timeSpent, isCompleted, isLocked, workday);
     }
 }

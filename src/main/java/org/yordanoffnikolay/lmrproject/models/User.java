@@ -24,6 +24,7 @@ public class User implements UserDetails {
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
+    @JsonIgnore
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -31,16 +32,16 @@ public class User implements UserDetails {
     )
     private Set<Role> authorities;
 
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<Workday> workdays = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Workday> workdays = new ArrayList<>();
 
-//    @ManyToMany(fetch = FetchType.LAZY)
-//    @JoinTable(
-//            name = "users_bricks",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "brick_id")
-//    )
-//    private Set<Brick> bricks = new HashSet<>();
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "users_bricks",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "brick_id")
+    )
+    private Set<Brick> bricks = new HashSet<>();
 
     public User() {
     }
@@ -65,13 +66,13 @@ public class User implements UserDetails {
         return this.password;
     }
 
-//    public List<Workday> getWorkdays() {
-//        return this.workdays;
-//    }
+    public List<Workday> getWorkdays() {
+        return this.workdays;
+    }
 
-//    public Set<Brick> getBricks() {
-//        return this.bricks;
-//    }
+    public Set<Brick> getBricks() {
+        return this.bricks;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -114,13 +115,13 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-//    public void setWorkdays(List<Workday> workdays) {
-//        this.workdays = workdays;
-//    }
+    public void setWorkdays(List<Workday> workdays) {
+        this.workdays = workdays;
+    }
 
-//    public void setBricks(Set<Brick> bricks) {
-//        this.bricks = bricks;
-//    }
+    public void setBricks(Set<Brick> bricks) {
+        this.bricks = bricks;
+    }
 
     @Override
     public boolean equals(Object o) {

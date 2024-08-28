@@ -1,5 +1,6 @@
 package org.yordanoffnikolay.lmrproject.models;
 
+
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -7,7 +8,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "brick")
+@Table(name = "bricks")
 public class Brick {
     @Id
     @Column(name = "brick_id")
@@ -20,11 +21,11 @@ public class Brick {
     @OneToMany(mappedBy = "brick", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Workplace> workplaces = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "brick_user",
-            joinColumns = @JoinColumn(name = "brick_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> users = new HashSet<>();
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    @JoinTable(name = "brick_user",
+//            joinColumns = @JoinColumn(name = "brick_id"),
+//            inverseJoinColumns = @JoinColumn(name = "user_id"))
+//    private Set<User> users = new HashSet<>();
 
     public Brick() {
     }
@@ -41,9 +42,9 @@ public class Brick {
         return workplaces;
     }
 
-    public Set<User> getUsers() {
-        return users;
-    }
+//    public Set<User> getUsers() {
+//        return users;
+//    }
 
     public void setId(Long id) {
         this.id = id;
@@ -57,9 +58,9 @@ public class Brick {
         this.workplaces = workplaces;
     }
 
-    public void setUsers(Set<User> users) {
-        this.users = users;
-    }
+//    public void setUsers(Set<User> users) {
+//        this.users = users;
+//    }
 
     @Override
     public boolean equals(Object o) {
@@ -68,11 +69,12 @@ public class Brick {
         Brick brick = (Brick) o;
         return Objects.equals(id, brick.id)
                 && Objects.equals(name, brick.name)
-                && Objects.equals(workplaces, brick.workplaces);
+//                && Objects.equals(workplaces, brick.workplaces);
+        ;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, workplaces);
-    }
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(id, name, workplaces);
+//    }
 }

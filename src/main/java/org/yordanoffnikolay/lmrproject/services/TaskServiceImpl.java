@@ -1,15 +1,12 @@
 package org.yordanoffnikolay.lmrproject.services;
 
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.yordanoffnikolay.lmrproject.dtos.CustomTaskDto;
 import org.yordanoffnikolay.lmrproject.dtos.OfficeWorkDto;
 import org.yordanoffnikolay.lmrproject.dtos.VisitDto;
 import org.yordanoffnikolay.lmrproject.helpers.AuthenticationHelper;
-import org.yordanoffnikolay.lmrproject.models.OfficeWork;
-import org.yordanoffnikolay.lmrproject.models.Task;
-import org.yordanoffnikolay.lmrproject.models.Visit;
+import org.yordanoffnikolay.lmrproject.models.*;
 import org.yordanoffnikolay.lmrproject.repositories.ClientRepository;
 import org.yordanoffnikolay.lmrproject.repositories.TaskRepository;
 import org.yordanoffnikolay.lmrproject.repositories.WorkdayRepository;
@@ -38,28 +35,39 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task createTask(VisitDto visitDto) {
         Visit visit = new Visit();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        visit.setUser(authenticationHelper.tryGetUser(authentication));
-        visit.setWorkday(workdayRepository.findByDateAndUser(visitDto.getDate(), visit.getUser()));
-        visit.setClient(clientRepository.findByName(visitDto.getClientName()).orElseThrow(() -> new RuntimeException("Client not found")));
-        visit.setWorkplace(workplaceRepository.findByName(visitDto.getWorkplaceName()).orElseThrow(() -> new RuntimeException("Workplace not found")));
-//        visit.setLocked(false);
-//        visit.setCompleted(false);
+        Workday workday = workdayRepository.findWorkdayByWorkdayId(visitDto.getWorkdayId());
+        User loggedUser = authenticationHelper.tryGetUser(SecurityContextHolder.getContext().getAuthentication());
+        if (workday.getUser().getUserId() != loggedUser.getUserId()
+                && !loggedUser.getAuthorities().contains("ADMIN")
+                && !loggedUser.getAuthorities().contains("MANAGER")) {
+            throw new RuntimeException("Not authorized");
+        }
+        visit.setWorkday(workday);
+        visit.setClient(clientRepository.findByName(visitDto.getClientName())
+                .orElseThrow(() -> new RuntimeException("Client not found")));
+        visit.setWorkplace(workplaceRepository.findByName(visitDto.getWorkplaceName())
+                .orElseThrow(() -> new RuntimeException("Workplace not found")));
+        visit.setLocked(false);
+        visit.setCompleted(false);
         return taskRepository.save(visit);
     }
 
     @Override
     public Task createTask(OfficeWorkDto officeWorkDto) {
         OfficeWork officeWork = new OfficeWork();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         officeWork.setTimeSpent(officeWorkDto.getTimeSpent());
-        officeWork.setUser(authenticationHelper.tryGetUser(authentication));
-        officeWork.setWorkday(workdayRepository.findByDateAndUser(officeWorkDto.getDate(), officeWork.getUser()));
+        officeWork.setWorkday(workdayRepository.findWorkdayByWorkdayId(officeWorkDto.getWorkdayId()));
         return taskRepository.save(officeWork);
     }
 
     @Override
     public Task createTask(CustomTaskDto customTaskDto) {
-        throw new RuntimeException("Not implemented yet!");
+        //todo
+        throw new RuntimeException("Custom task not implemented yet!");
+    }
+
+    @Override
+    public Task getTaskById(long taskId) {
+        return taskRepository.findByTaskId(taskId);
     }
 }

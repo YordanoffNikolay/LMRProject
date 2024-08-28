@@ -1,15 +1,15 @@
 package org.yordanoffnikolay.lmrproject.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "workdays")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Workday {
 
     @Id
@@ -25,7 +25,7 @@ public class Workday {
     private User user;
 
     @OneToMany(mappedBy = "workday", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
+    @JsonManagedReference
     private List<Task> tasks;
 
     public Workday() {

@@ -36,7 +36,6 @@ public class WorkplaceServiceImpl implements WorkplaceService {
 
     @Override
     public Workplace getById(Long id) {
-
         if (workplaceRepository.findById(id).isPresent()) {
             return workplaceRepository.findById(id).get();
         } else {
@@ -68,9 +67,9 @@ public class WorkplaceServiceImpl implements WorkplaceService {
         Workplace workplace = getById(id);
         workplace.setName(workplaceDto.getName());
         workplace.setAddress(workplaceDto.getAddress());
-        if (workplaceDto.getBrickName() != null) {
-            workplace.setBrick(brickService.getBrickByName(workplaceDto.getBrickName()).orElse(null));
-        }
+//        if (workplaceDto.getBrickName() != null) {
+//            workplace.setBrick(brickService.getBrickByName(workplaceDto.getBrickName()).get());
+//        }
         getLoggedUserAuthorities();
         if (workplaceRepository.findById(workplace.getId()).isPresent()) {
             return workplaceRepository.save(workplace);

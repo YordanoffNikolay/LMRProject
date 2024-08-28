@@ -9,13 +9,13 @@ import java.util.Optional;
 
 public interface ClientService {
 
-    void createClient(ClientDto clientDto, User loggedUser);
+    void createClient(ClientDto clientDto);
 
-    void updateClient(ClientDto clientDto, User loggedUser);
+    void updateClient(ClientDto clientDto, long id);
 
-    void deleteClient(ClientDto clientDto, User loggedUser);
+    void deleteClient(long id);
 
-    List<Client> getAllClients(User loggedUser);
+    List<Client> getAllClients();
 
-    Optional<Client> getClientByName(String name);
+    Optional<Client> getClientById(long id);
 }

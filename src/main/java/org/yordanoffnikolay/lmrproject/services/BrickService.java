@@ -17,7 +17,5 @@ public interface BrickService{
 
     Brick getBrick(long id);
 
-    Optional<Brick> getBrickByName(String name);
-
     void updateBrick(long id, BrickDto brickDto, User loggedUser);
 }

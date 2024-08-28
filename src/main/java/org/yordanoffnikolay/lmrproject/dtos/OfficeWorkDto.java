@@ -4,6 +4,7 @@ public class OfficeWorkDto {
 
     private int timeSpent;
     private String date;
+    private long workdayId;
 
     public OfficeWorkDto() {
     }
@@ -22,5 +23,13 @@ public class OfficeWorkDto {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public long getWorkdayId() {
+        return workdayId;
+    }
+
+    public void setWorkdayId(long workdayId) {
+        this.workdayId = workdayId;
     }
 }

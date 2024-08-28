@@ -38,8 +38,8 @@ public class BrickServiceImpl implements BrickService {
         try {
             Brick brick = new Brick();
             brick.setName(brickDto.getName());
-            brick.setUsers(new HashSet<>());
-            brick.setWorkplaces(new HashSet<>());
+//            brick.setUsers(new HashSet<>());
+//            brick.setWorkplaces(new HashSet<>());
             brickRepository.save(brick);
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
@@ -61,13 +61,6 @@ public class BrickServiceImpl implements BrickService {
         return brickRepository.findById(id).get();
     }
 
-    public Brick getBrick(String name) {
-        if (brickRepository.findByName(name).isEmpty()) {
-            throw new EntityNotFoundException("Brick", "name", name);
-        }
-        return brickRepository.findByName(name).get();
-    }
-
     @Override
     public void updateBrick(long id, BrickDto brickDto, User loggedUser) {
         checkAuthorities();
@@ -86,10 +79,5 @@ public class BrickServiceImpl implements BrickService {
     @Override
     public List<Brick> getBricks() {
         return brickRepository.findAll();
-    }
-
-    @Override
-    public Optional<Brick> getBrickByName(String name) {
-        return brickRepository.findByName(name);
     }
 }

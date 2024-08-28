@@ -78,7 +78,7 @@ public class WorkplaceRestController {
             Workplace workplace = new Workplace();
             workplace.setName(workplaceDto.getName());
             workplace.setAddress(workplaceDto.getAddress());
-            brickService.getBrickByName(workplaceDto.getBrickName()).ifPresent(workplace::setBrick);
+//            brickService.getBrickByName(workplaceDto.getBrickName()).ifPresent(workplace::setBrick);
             workplaceService.create(workplace);
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());

@@ -2,15 +2,12 @@ package org.yordanoffnikolay.lmrproject.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.yordanoffnikolay.lmrproject.dtos.CustomTaskDto;
-import org.yordanoffnikolay.lmrproject.dtos.GenericTaskDto;
-import org.yordanoffnikolay.lmrproject.dtos.OfficeWorkDto;
-import org.yordanoffnikolay.lmrproject.dtos.VisitDto;
+import org.yordanoffnikolay.lmrproject.dtos.*;
+import org.yordanoffnikolay.lmrproject.exceptions.AuthorizationException;
+import org.yordanoffnikolay.lmrproject.exceptions.EntityNotFoundException;
 import org.yordanoffnikolay.lmrproject.helpers.AuthenticationHelper;
 import org.yordanoffnikolay.lmrproject.models.Task;
 import org.yordanoffnikolay.lmrproject.services.TaskService;
@@ -51,6 +48,20 @@ public class TaskRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You need to login first");
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}")
+    public Task getById(@PathVariable Long id) {
+        try {
+            authenticationHelper.tryGetUser(SecurityContextHolder.getContext().getAuthentication());
+            return taskService.getTaskById(id);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
         }
     }
 }

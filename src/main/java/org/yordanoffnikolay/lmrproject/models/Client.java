@@ -1,13 +1,11 @@
 package org.yordanoffnikolay.lmrproject.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-
-import java.util.HashSet;
-import java.util.Set;
-
 
 @Entity
 @Table(name = "clients")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Client {
 
     @Id
@@ -18,13 +16,14 @@ public class Client {
     @Column(name = "client_name")
     private String name;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "client_workplaces",
-            joinColumns = @JoinColumn(name = "client_id"),
-            inverseJoinColumns = @JoinColumn(name = "workplace_id")
-    )
-    private Set<Workplace> workplaces = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workplace_id")
+    @JsonIgnoreProperties({"clients", "brick"})
+    private Workplace workplace;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     public Client() {
     }
@@ -45,11 +44,18 @@ public class Client {
         this.name = name;
     }
 
-    public Set<Workplace> getWorkplaces() {
-        return workplaces;
+    public void setWorkplace(Workplace workplace) {
+        this.workplace = workplace;
+    }
+    public Workplace getWorkplace() {
+        return workplace;
     }
 
-    public void setWorkplaces(Set<Workplace> workplaces) {
-        this.workplaces = workplaces;
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }

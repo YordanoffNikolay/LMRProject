@@ -5,7 +5,7 @@ public class VisitDto {
     private String clientName;
     private String workplaceName;
     private boolean isDouble;
-    private String date;
+    private long workdayId;
 
     private VisitDto() {
     }
@@ -34,11 +34,11 @@ public class VisitDto {
         isDouble = aDouble;
     }
 
-    public String getDate() {
-        return date;
+    public long getWorkdayId() {
+        return workdayId;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setWorkdayId(long workdayId) {
+        this.workdayId = workdayId;
     }
 }

@@ -1,10 +1,14 @@
 package org.yordanoffnikolay.lmrproject.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
+@Table(name = "workplaces")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Workplace {
 
     @Id
@@ -18,7 +22,11 @@ public class Workplace {
     @Column(name = "workplace_address")
     private String address;
 
-    @ManyToOne
+    @OneToMany(mappedBy = "workplace", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"workplace"})
+    private List<Client> clients;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brick_id")
     private Brick brick;
 
@@ -41,20 +49,20 @@ public class Workplace {
         this.name = name;
     }
 
-    public Brick getBrick() {
-        return brick;
-    }
-
-    public void setBrick(Brick brick) {
-        this.brick = brick;
-    }
-
     public String getAddress() {
         return address;
     }
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public List<Client> getClients() {
+        return clients;
+    }
+
+    public void setClients(List<Client> clients) {
+        this.clients = clients;
     }
 
     @Override
@@ -64,11 +72,7 @@ public class Workplace {
         Workplace workplace = (Workplace) o;
         return Objects.equals(id, workplace.id)
                 && Objects.equals(name, workplace.name)
-                && Objects.equals(brick, workplace.brick);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, brick);
+                && Objects.equals(address, workplace.address)
+                && Objects.equals(clients, workplace.clients);
     }
 }

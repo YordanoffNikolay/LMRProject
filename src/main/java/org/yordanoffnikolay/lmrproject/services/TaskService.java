@@ -9,4 +9,5 @@ public interface TaskService {
     Task createTask(VisitDto visitDto);
     Task createTask(OfficeWorkDto officeWorkDto);
     Task createTask(CustomTaskDto customTaskDto);
+    Task getTaskById(long taskId);
 }

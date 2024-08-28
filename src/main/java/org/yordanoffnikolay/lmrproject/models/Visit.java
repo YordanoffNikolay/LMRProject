@@ -1,22 +1,26 @@
 package org.yordanoffnikolay.lmrproject.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.Objects;
 
 @Entity
 @Table(name = "visits")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Visit extends Task{
 
     @Column(name = "is_double")
     private boolean isDouble;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "client_id")
+    @JsonIgnoreProperties({"workplace", "category"})
     private Client client;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "workplace_id")
+    @JsonIgnoreProperties({"clients", "brick"})
     private Workplace workplace;
 
     public Visit() {
