@@ -34,15 +34,14 @@ public class WorkdayRestController {
     }
 
     @GetMapping
-    public List<Workday> getWorkdays() {
+    public List<Workday> getAllWorkdays() {
         try {
             authenticationHelper.isAuthenticated();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
         //todo
-//        return workdayService.getWorkdays();
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+        return workdayService.getAllWorkdays();
     }
 
     @GetMapping("/{id}")
@@ -52,8 +51,7 @@ public class WorkdayRestController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-//        return workdayService.getWorkdayById(id);
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+        return workdayService.getWorkdayById(id);
     }
 
     @DeleteMapping("/{id}")
@@ -63,8 +61,7 @@ public class WorkdayRestController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-//        workdayService.deleteWorkday(id);
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+        workdayService.deleteWorkday(id);
     }
 
     @PutMapping("/{id}")
