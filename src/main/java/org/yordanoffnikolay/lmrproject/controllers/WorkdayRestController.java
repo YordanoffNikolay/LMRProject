@@ -1,15 +1,14 @@
 package org.yordanoffnikolay.lmrproject.controllers;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.yordanoffnikolay.lmrproject.dtos.DateDto;
 import org.yordanoffnikolay.lmrproject.helpers.AuthenticationHelper;
 import org.yordanoffnikolay.lmrproject.models.Workday;
 import org.yordanoffnikolay.lmrproject.services.WorkdayService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/workday")
@@ -32,5 +31,51 @@ public class WorkdayRestController {
         }
         String date = dateDto.getYear() + "-" + dateDto.getMonth() + "-" + dateDto.getDay();
         return workdayService.createWorkday(date);
+    }
+
+    @GetMapping
+    public List<Workday> getWorkdays() {
+        try {
+            authenticationHelper.isAuthenticated();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        //todo
+//        return workdayService.getWorkdays();
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @GetMapping("/{id}")
+    public Workday getWorkday(@PathVariable Long id) {
+        try {
+            authenticationHelper.isAuthenticated();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+//        return workdayService.getWorkdayById(id);
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteWorkday(@PathVariable Long id) {
+        try {
+            authenticationHelper.isAuthenticated();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+//        workdayService.deleteWorkday(id);
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @PutMapping("/{id}")
+    public Workday updateWorkday(@PathVariable Long id, @RequestBody DateDto dateDto) {
+        try {
+            authenticationHelper.isAuthenticated();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        String date = dateDto.getYear() + "-" + dateDto.getMonth() + "-" + dateDto.getDay();
+//        return workdayService.updateWorkday(id, date);
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
     }
 }
