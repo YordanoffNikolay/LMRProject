@@ -8,7 +8,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.yordanoffnikolay.lmrproject.dtos.BrickDto;
 import org.yordanoffnikolay.lmrproject.exceptions.DuplicateEntityException;
 import org.yordanoffnikolay.lmrproject.exceptions.EntityNotFoundException;
-import org.yordanoffnikolay.lmrproject.helpers.AuthenticationHelper;
 import org.yordanoffnikolay.lmrproject.models.Brick;
 import org.yordanoffnikolay.lmrproject.models.User;
 import org.yordanoffnikolay.lmrproject.repositories.BrickRepository;
@@ -21,12 +20,10 @@ import static org.yordanoffnikolay.lmrproject.services.UserServiceImpl.UNAUTHORI
 public class BrickServiceImpl implements BrickService {
 
     private final BrickRepository brickRepository;
-    private final AuthenticationHelper authenticationHelper;
 
     @Autowired
-    public BrickServiceImpl(BrickRepository brickRepository, AuthenticationHelper authenticationHelper) {
+    public BrickServiceImpl(BrickRepository brickRepository) {
         this.brickRepository = brickRepository;
-        this.authenticationHelper = authenticationHelper;
     }
 
     @Override
@@ -79,5 +76,10 @@ public class BrickServiceImpl implements BrickService {
     @Override
     public List<Brick> getBricks() {
         return brickRepository.findAll();
+    }
+
+    @Override
+    public Brick getBrickByName(String name) {
+        return brickRepository.findByName(name).orElseThrow(() -> new EntityNotFoundException("Brick", "name", name));
     }
 }

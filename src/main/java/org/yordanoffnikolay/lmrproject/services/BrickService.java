@@ -18,4 +18,6 @@ public interface BrickService{
     Brick getBrick(long id);
 
     void updateBrick(long id, BrickDto brickDto, User loggedUser);
+
+    Brick getBrickByName(String name);
 }

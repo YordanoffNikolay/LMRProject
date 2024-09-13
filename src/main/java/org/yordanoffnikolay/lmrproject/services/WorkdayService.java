@@ -12,7 +12,7 @@ public interface WorkdayService {
 
     List<Workday> getAllWorkdays();
 
-    List<Workday> getAllWorkdaysByUser();
+    List<Workday> getAllWorkdaysOfLoggedUser();
 
     void deleteWorkday(Long id);
 }

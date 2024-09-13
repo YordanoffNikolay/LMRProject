@@ -47,13 +47,14 @@ public class WorkdayServiceImpl implements WorkdayService {
 
     /** Method for getting all workdays by LOGGED USER. Only for logged user **/
     @Override
-    public List<Workday> getAllWorkdaysByUser() {
+    public List<Workday> getAllWorkdaysOfLoggedUser() {
         return workdayRepository.findAllByUser(authenticationHelper.tryGetUser(SecurityContextHolder.getContext().getAuthentication()));
     }
 
     @Override
     public void deleteWorkday(Long id) {
         Workday workday = workdayRepository.findById(id).orElse(null);
+        assert workday != null;
         if (workday.getUser() != authenticationHelper.tryGetUser(SecurityContextHolder.getContext().getAuthentication())) {
             throw new AuthorizationException("You are not authorized ");
         }

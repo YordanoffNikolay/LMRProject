@@ -64,15 +64,17 @@ public class WorkdayRestController {
         workdayService.deleteWorkday(id);
     }
 
-    @PutMapping("/{id}")
-    public Workday updateWorkday(@PathVariable Long id, @RequestBody DateDto dateDto) {
-        try {
-            authenticationHelper.isAuthenticated();
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
-        String date = dateDto.getYear() + "-" + dateDto.getMonth() + "-" + dateDto.getDay();
-//        return workdayService.updateWorkday(id, date);
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
-    }
+    //todo do i need to implement this?
+//
+//    @PutMapping("/{id}")
+//    public Workday updateWorkday(@PathVariable Long id, @RequestBody DateDto dateDto) {
+//        try {
+//            authenticationHelper.isAuthenticated();
+//        } catch (Exception e) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+//        }
+//        String date = dateDto.getYear() + "-" + dateDto.getMonth() + "-" + dateDto.getDay();
+////        return workdayService.updateWorkday(id, date);
+//        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+//    }
 }

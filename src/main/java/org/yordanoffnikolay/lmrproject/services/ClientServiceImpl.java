@@ -23,12 +23,10 @@ public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
     private final CategoryRepository categoryRepository;
-    private final AuthenticationHelper authenticationHelper;
 
-    public ClientServiceImpl(ClientRepository clientRepository, CategoryRepository categoryRepository, AuthenticationHelper authenticationHelper) {
+    public ClientServiceImpl(ClientRepository clientRepository, CategoryRepository categoryRepository) {
         this.clientRepository = clientRepository;
         this.categoryRepository = categoryRepository;
-        this.authenticationHelper = authenticationHelper;
     }
 
     @Override
